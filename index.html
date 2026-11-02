@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Opening email</title>
+<style>body{font-family:-apple-system,"Segoe UI",sans-serif;padding:24px;color:#222}a{display:inline-block;margin:8px 16px 8px 0;font-size:18px}</style>
+</head>
+<body>
+<p id="msg">Opening the email&hellip;</p>
+<p><a id="gmail" target="_top" href="https://mail.google.com/">Open in Gmail</a><a id="mail" target="_top" href="#" hidden>Open in Mail</a></p>
+<script>
+// One link for every device. The link carries two targets: g = the Gmail web address of the email, m = the
+// message:// address of the same email (its Message-ID), which Apple Mail understands. An iPhone or iPad goes
+// to Mail, anything else to Gmail. Nothing else is ever opened: a target that is not one of those two kinds
+// falls back to the Gmail home page. This page reads nothing and stores nothing.
+(function () {
+  // Targets travel after '#', which the browser never sends to the server: GitHub sees only that the page loaded.
+  var q = new URLSearchParams(location.hash ? location.hash.slice(1) : location.search);
+  var g = q.get('g') || '', m = q.get('m') || '';
+  if (!/^https:\/\/mail\.google\.com\//.test(g)) g = 'https://mail.google.com/';
+  if (!/^message:\/\/[^"'<>\s]+$/.test(m)) m = '';
+  var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var target = (ios && m) ? m : g;
+  document.getElementById('gmail').href = g;
+  if (m) { var a = document.getElementById('mail'); a.href = m; a.hidden = false; }
+  try { location.replace(target); } catch (e) { location.href = target; }
+  setTimeout(function () { document.getElementById('msg').textContent = 'If nothing opened, tap a link:'; }, 2500);
+})();
+</script>
+</body>
+</html>
